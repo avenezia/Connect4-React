@@ -1,7 +1,7 @@
 import * as React from 'react';
 
 function Circle() {
-    var style = {
+    let style = {
         backgroundColor: 'white',
         border: '1px solid black',
         borderRadius: '100%',
