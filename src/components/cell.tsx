@@ -1,9 +1,10 @@
 import * as React from 'react';
 
 import Circle from './circle';
+import { CellProps } from './interfaces';
 
-function Cell() {
-    let style = {
+function Cell(props: CellProps) {
+    const style = {
         height: 50,
         width: 50,
         border: '1px solid black',
@@ -11,8 +12,8 @@ function Cell() {
     };
 
     return (
-        <div style={style}>
-            <Circle/>
+        <div style={style} onClick={() => props.handleClick(props.rowId, props.columnId)}>
+            <Circle cell={props.cell}/>
         </div>
     );
 }

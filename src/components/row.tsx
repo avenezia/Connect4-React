@@ -1,15 +1,23 @@
 import * as React from 'react';
 
 import Cell from './cell';
+import { RowProps } from './interfaces';
 
-function Row() {
+function Row(props: RowProps) {
     let style = {
           display: 'flex'
     };
-    const numberOfColumns = 7;
+
     let cells = [];
-    for (let i = 0; i < numberOfColumns; i++) {
-        cells.push(<Cell/>);
+    for (let i = 0; i < props.cells.length; i++) {
+        cells.push(
+            <Cell
+                key={i}
+                rowId={props.rowId}
+                columnId={i}
+                cell={props.cells[i]}
+                handleClick={props.handleClick}
+            />);
     }
     return (
         <div style={style}>
