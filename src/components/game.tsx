@@ -34,22 +34,25 @@ class Game extends React.Component<any, any> {
 
     handleClick(row: number, column: number) {
         console.log('Click received ' + row + ' ' + column);
-        this.setState({cells: this.updateCellsOnClick(column), isRedTurn: !this.state.isRedTurn});        
+        let rowToBeUsed: number = this.availableCellInColumn(column);
+        if (rowToBeUsed !== -1) {
+            const newCells = this.updateCellsOnClick(rowToBeUsed, column);
+            console.log(this.checkVerticalVictory(column, newCells));
+            console.log(this.checkHorizontalVictory(rowToBeUsed, newCells));
+            this.setState({cells: newCells, isRedTurn: !this.state.isRedTurn});
+        } else {
+            this.setState({isRedTurn: !this.state.isRedTurn});
+        }
     }
 
-    updateCellsOnClick(column: number): Array<Array<CellState>> {
-        let rowToBeFilled: number = this.availableCellInColumn(column);
-        if (rowToBeFilled !== -1) {
-            let tempCells: Array<Array<CellState>> = [];
-            for (let i = 0; i < 6; i++) {
-                tempCells.push(this.state.cells[i].slice());
-            }
-            tempCells[rowToBeFilled][column] =
-                (this.state.isRedTurn ? CellState.Red : CellState.Black);
-            return tempCells;
-        } else {
-            return this.state.cells;
+    updateCellsOnClick(row: number, column: number): Array<Array<CellState>> {
+        let tempCells: Array<Array<CellState>> = [];
+        for (let i = 0; i < 6; i++) {
+            tempCells.push(this.state.cells[i].slice());
         }
+        tempCells[row][column] =
+            (this.state.isRedTurn ? CellState.Red : CellState.Black);
+        return tempCells;
     }
 
     availableCellInColumn(column: number): number {
@@ -60,6 +63,32 @@ class Game extends React.Component<any, any> {
         }
 
         return -1;
+    }
+
+    checkHorizontalVictory(row: number, cells: Array<Array<CellState>>): boolean {
+        const playerToBeChecked = this.state.isRedTurn ? CellState.Red : CellState.Black;
+        for (let j = 0; j < 4; j++) {
+            if (cells[row][j] === playerToBeChecked &&
+                cells[row][j + 1] === playerToBeChecked &&
+                cells[row][j + 2] === playerToBeChecked &&
+                cells[row][j + 3] === playerToBeChecked) {
+                    return true;
+            }
+        }
+        return false;
+    }
+
+    checkVerticalVictory(column: number, cells: Array<Array<CellState>>): boolean {
+        const playerToBeChecked = this.state.isRedTurn ? CellState.Red : CellState.Black;
+        for (let i = 0; i < 3; i++) {
+            if (cells[i][column] === playerToBeChecked &&
+                cells[i + 1][column] === playerToBeChecked &&
+                cells[i + 2][column] === playerToBeChecked &&
+                cells[i + 3][column] === playerToBeChecked) {
+                    return true;
+            }
+        }
+        return false;
     }
 }
 
