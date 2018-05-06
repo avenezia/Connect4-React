@@ -1,7 +1,7 @@
 import * as React from 'react';
 
 import Board from './board';
-import { CellState } from './cell_state';
+import { CellPlayer } from './cell_player';
 
 class Game extends React.Component<any, any> {
     readonly numRows = 6;
@@ -9,14 +9,14 @@ class Game extends React.Component<any, any> {
 
     constructor(props: any) {
         super(props);
-        this.state = {cells: this.getInitialCells(), isRedTurn: false, winner: CellState.Empty};
+        this.state = {cells: this.getInitialCells(), isRedTurn: false, winner: CellPlayer.None};
         this.handleClick = this.handleClick.bind(this);
     }
 
     getInitialCells() {
-        let cells: Array<Array<CellState>> = [];
+        let cells: Array<Array<CellPlayer>> = [];
         for (let i = 0; i < this.numRows; i++) {
-            cells.push(new Array(this.numCols).fill(CellState.Empty));
+            cells.push(new Array(this.numCols).fill(CellPlayer.None));
         }
         return cells;
     }
@@ -35,15 +35,15 @@ class Game extends React.Component<any, any> {
     }
 
     header() {
-        if (this.state.winner !== CellState.Empty) {
-            return this.state.winner === CellState.Red ? 'Red wins' : 'Black wins';
+        if (this.state.winner !== CellPlayer.None) {
+            return this.state.winner === CellPlayer.Red ? 'Red wins' : 'Black wins';
         } else {
             return this.state.isRedTurn ? 'Red\'s turn' : 'Black\'s turn';
         }
     }
 
     handleClick(row: number, column: number) {
-        if (this.state.winner !== CellState.Empty) {
+        if (this.state.winner !== CellPlayer.None) {
             return;
         }
 
@@ -51,7 +51,7 @@ class Game extends React.Component<any, any> {
         if (rowToBeUsed !== -1) {
             const newCells = this.updateCellOnClick(rowToBeUsed, column);
             if (this.checkVictory(rowToBeUsed, column, newCells)) {
-                this.setState({cells: newCells, winner: (this.state.isRedTurn) ? CellState.Red : CellState.Black});
+                this.setState({cells: newCells, winner: (this.state.isRedTurn) ? CellPlayer.Red : CellPlayer.Black});
             } else {
                 this.setState({cells: newCells, isRedTurn: !this.state.isRedTurn});
             }
@@ -61,22 +61,22 @@ class Game extends React.Component<any, any> {
     }
 
     restartGame() {
-        this.setState({cells: this.getInitialCells(), isRedTurn: false, winner: CellState.Empty});
+        this.setState({cells: this.getInitialCells(), isRedTurn: false, winner: CellPlayer.None});
     }
 
-    updateCellOnClick(row: number, column: number): Array<Array<CellState>> {
-        let tempCells: Array<Array<CellState>> = [];
+    updateCellOnClick(row: number, column: number): Array<Array<CellPlayer>> {
+        let tempCells: Array<Array<CellPlayer>> = [];
         for (let i = 0; i < 6; i++) {
             tempCells.push(this.state.cells[i].slice());
         }
         tempCells[row][column] =
-            (this.state.isRedTurn ? CellState.Red : CellState.Black);
+            (this.state.isRedTurn ? CellPlayer.Red : CellPlayer.Black);
         return tempCells;
     }
 
     availableCellInColumn(column: number): number {
         for (let i = this.numRows - 1; i >= 0; i--) {
-            if (this.state.cells[i][column] === CellState.Empty) {
+            if (this.state.cells[i][column] === CellPlayer.None) {
                 return i;
             }
         }
@@ -84,14 +84,14 @@ class Game extends React.Component<any, any> {
         return -1;
     }
 
-    checkVictory(row: number, column: number, cells: Array<Array<CellState>>): boolean {
+    checkVictory(row: number, column: number, cells: Array<Array<CellPlayer>>): boolean {
         return this.checkVerticalVictory(column, cells) ||
             this.checkHorizontalVictory(row, cells) ||
             this.checkDiagonalVictory(cells);
     }
 
-    checkHorizontalVictory(row: number, cells: Array<Array<CellState>>): boolean {
-        const playerToBeChecked = this.state.isRedTurn ? CellState.Red : CellState.Black;
+    checkHorizontalVictory(row: number, cells: Array<Array<CellPlayer>>): boolean {
+        const playerToBeChecked = this.state.isRedTurn ? CellPlayer.Red : CellPlayer.Black;
         const maxColumnToStartThe4 = 3;
         for (let j = 0; j <= maxColumnToStartThe4; j++) {
             if (cells[row][j] === playerToBeChecked &&
@@ -104,8 +104,8 @@ class Game extends React.Component<any, any> {
         return false;
     }
 
-    checkVerticalVictory(column: number, cells: Array<Array<CellState>>): boolean {
-        const playerToBeChecked = this.state.isRedTurn ? CellState.Red : CellState.Black;
+    checkVerticalVictory(column: number, cells: Array<Array<CellPlayer>>): boolean {
+        const playerToBeChecked = this.state.isRedTurn ? CellPlayer.Red : CellPlayer.Black;
         const maxRowToStartThe4 = 2;
         for (let i = 0; i <= maxRowToStartThe4; i++) {
             if (cells[i][column] === playerToBeChecked &&
@@ -119,13 +119,13 @@ class Game extends React.Component<any, any> {
     }
 
     // TODO: diagonal check should be refactored.
-    checkDiagonalVictory(cells: Array<Array<CellState>>): boolean {
-        const player = this.state.isRedTurn ? CellState.Red : CellState.Black;
+    checkDiagonalVictory(cells: Array<Array<CellPlayer>>): boolean {
+        const player = this.state.isRedTurn ? CellPlayer.Red : CellPlayer.Black;
         return this.checkTopLeftBottomRightDiagonal(player, cells) ||
             this.checkBottomLeftTopRightDiagonal(player, cells);
     }
 
-    checkTopLeftBottomRightDiagonal(player: CellState, cells: Array<Array<CellState>>): boolean {
+    checkTopLeftBottomRightDiagonal(player: CellPlayer, cells: Array<Array<CellPlayer>>): boolean {
         let rowIndex = 0, colIndex = 0;
         const maxRowToStartDiagonal = 2;
         const maxColumnToStartDiagonal = 3;
@@ -148,7 +148,7 @@ class Game extends React.Component<any, any> {
         return false;
     }
 
-    checkBottomLeftTopRightDiagonal(player: CellState, cells: Array<Array<CellState>>): boolean {
+    checkBottomLeftTopRightDiagonal(player: CellPlayer, cells: Array<Array<CellPlayer>>): boolean {
         let rowIndex = this.numRows - 1, colIndex = 0;
         const minRowToStartDiagonal = 3;
         const maxColumnToStartDiagonal = 3;

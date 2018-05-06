@@ -1,12 +1,12 @@
 import * as React from 'react';
 import { CircleProps } from './interfaces';
-import { CellState } from './cell_state';
+import { CellPlayer } from './cell_player';
 
 function Circle(props: CircleProps) {
     let circleColor = 'white';
-    if (props.cell === CellState.Black) {
+    if (props.cell === CellPlayer.Black) {
         circleColor = 'black';
-    } else if (props.cell === CellState.Red) {
+    } else if (props.cell === CellPlayer.Red) {
         circleColor = 'red';
     }
 
